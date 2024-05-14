@@ -23,7 +23,7 @@ Cada tipo de base de datos NoSQL está optimizado para diferentes casos de uso y
 En este artículo/tutorial se va a explicar cómo realizar una migración de una base de datos **SQL** a **NoSQL** de tipo **Documental** (*MongoDB*). Para realizar esta migración existen múltiples herramientas especializadas donde el proceso es prácticamente automático. Sin embargo, como este blog tiene una orientación didáctica, se utilizarán herramientas más básicas como **Google Colab** para realizar un preprocesamiento de los datos en lenguaje **Python** con el fin de transformar las *tablas SQL* a *colecciones de documentos NoSQL de Mongo*. A continuación, se ingresarán las colecciones a **MongoDB** a través del Power Shell de **MongoDB**, **Mongosh**.
 
 ## 1. Análisis del diagrama Entidad-Relación de la base de datos
-
+![un gatito]({{ site.baseurl }}/images/migracion_sql_mongo/entidad relacion_blog.drawio.png)
 
 vamonos que nos vamos
 
