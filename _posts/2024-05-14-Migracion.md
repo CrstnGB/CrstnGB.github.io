@@ -46,8 +46,8 @@ Nótese que la tabla *detalle_orden* surge de una relación n:m entre las entida
 
 ## Estructura objetivo: colecciones de documentos
 ## Creación de **colecciones** de **documentos** a partir de la base de datos relacional
+En primer lugar, se deberá de crear una colección vacía por cada entidad:
 ``` python
-#Se crean las colecciones vacías
 cliente = []
 mascota = []
 producto = []
