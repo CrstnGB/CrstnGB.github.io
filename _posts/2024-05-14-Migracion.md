@@ -34,9 +34,9 @@ No es el fin de este artículo la explicación exhaustiva de las diferencias ent
 
 La base de datos a usar para este ejercicio se llama *love4pets.db*. De partida, no se tiene la estructura de relación-entidad de esta base de datos, por lo que de alguna manera se deben obtener estas relaciones.
 
-Para ello, se usará **Google Colab**, el cual funciona con el lenguaje Python. Para ello, se crea un nuevo archivo en **Google Colab** y se carga la base de datos.
+Para ello, se usará **Google Colab**, el cual funciona con el lenguaje Python. Se crea un nuevo archivo y se carga la base de datos.
 
-![carga_google_colab]({{ site.baseurl }}/images/migracion_sql_mongo/1-Cargar_db_en_google_collab.png)
+![1-Cargar_db_en_google_collab.png]({{ site.baseurl }}/images/migracion_sql_mongo/1-Cargar_db_en_google_collab.png)
 
 Tras realizar la carga, nos conectamos a una RAM y Disco de *Google Colab* y ejecutamos el siguiente código:
 
@@ -119,7 +119,7 @@ PRIMARY KEY (proveedor_id, producto_id)
 ```
 ### 1.2. Representación visual e interpretación del diagrama entidad-relación
 
-![Diagrama_entidad_relacion]({{ site.baseurl }}/images/migracion_sql_mongo/entidad_relacion_blog.drawio.png)
+![2-entidad relacion_blog.drawio.png]({{ site.baseurl }}/images/migracion_sql_mongo/2-entidad relacion_blog.drawio.png)
 
 Como se puede observar, se ha representado el modelo de entidad-relación donde se define cada tabla con la entidad que representa, sus atributos y cuales de estos son los *primary keys* y *foreign keys*.
 
