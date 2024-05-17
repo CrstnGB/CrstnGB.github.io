@@ -478,10 +478,10 @@ Se usará el módulo "json", el cual está integrado dentro de las bibliotecas p
 import json
 
 lst_colecciones_ppales = [(cliente, "cliente"),
-							(producto, "producto"),
-							(proveedor, "proveedor"),
-							(departamento, "departamento")
-							]
+			(producto, "producto"),
+			(proveedor, "proveedor"),
+			(departamento, "departamento")
+			]
 for coleccion, nombre in lst_colecciones_ppales:
 	# Ruta para guardar los archivo JSON
 	ruta_colec_json = '/content/' + nombre + '.json'
@@ -491,6 +491,31 @@ for coleccion, nombre in lst_colecciones_ppales:
 ```
 Tan solo queda descargar los *documentos* exportados a la sesión actual de *Google Colab* en local.
 
-FIGURA
+![3-JSON_a_descargar.png]({{ site.baseurl }}/images/migracion_sql_mongo/3-JSON_a_descargar.png)
+
+## 3. Creación de la base de datos NoSQL en **MongoDB**
+Para poder operar en *MongoDB* se necesita completar una serie de pasos previos, como el registro en *MongoDB Atlas*, creación de un cluster, etc... Sin embargo, debido a la existencia de manuales exclusivos para la realización de este proceso, no se explicará en este *documento* ya que no es parte del objetivo del mismo.
+
+Por lo tanto, se parte de que ya se tiene un usuario creado en Atlas y un cluster operativo.
+### 3.1. Entorno de trabajo: Shell de Mongo (Mongosh)
+Aunque hay distintas formas de poder conectarse al cluster de *MongoDB* se va a utilizar el Shell de Mongo (mongosh).
+
+La elección de esta herramienta se debe a la posibilidad de usar directamente el lenguaje MQL (MongoDB Query Language). El uso de otros softwares como la extensión de *MongoDB* for *VS Code* conlleva el uso de un lenguaje distinto, ya que MQL no es compatible completamente con todas las aplicaciones.
+
+Como el desarrollo de este *documento* tiene fines didácticos, se utilizará por tanto la terminal Shell de Mongo.
+
+Así pues, se seguirán las instrucciones adecuadas para la instalación de Mongosh y, una vez abierta, se procede a la conexión con el cluster. Esta conexión se produce mediante una cadena de texto y contraseña generada desde la web de *MongoDB* e insertada desde nuestra terminal.
+
+![4-Powershell_mongo_conexion.png]({{ site.baseurl }}/images/migracion_sql_mongo/4-Powershell_mongo_conexion.png)
+
+Desde este momento, ya se puede realizar las consultas MQL en el cluster.
+
+### 3.2. Creación de la base de datos e ingreso de las **colecciones**
+Se crea la base de datos directamente con la sentencia que declara que se quiere usar dicha base de datos.
+
+```cmd
+Atlas atlas-59qnuo-shard-0 [primary] admin> use love4pets		
+```
+
 
 
