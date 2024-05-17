@@ -663,14 +663,14 @@ Output:
 	]
 }
 ]
-			\end{code_output}
-			Cambiemos ahora el teléfono de un cliente, simulando que ha cambiado de número y queremos actualizar la base de datos.
+```
+Cambiemos ahora el teléfono de un cliente, simulando que ha cambiado de número y queremos actualizar la base de datos.
 			
-			\begin{code_input}
+```cmd
 db.cliente.update({"nombre": "Roberto Martin Ortega"}, {$set: {"telefono": "565-38-78"}})
-			\end{code_input} 
-			
-			\begin{code_output}
+``` 
+Output:			
+```cmd
 {
 	acknowledged: true,
 	insertedId: null,
