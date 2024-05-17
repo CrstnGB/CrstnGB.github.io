@@ -382,3 +382,115 @@ unifColecTipo1((producto, "producto"), "producto_id", (suministro, "suministro")
 unifColecTipo1((proveedor, "proveedor"), "proveedor_id", (suministro, "suministro"))	
 ```
 En este punto, se tienen tres *colecciones*:
+- *Cliente*
+- *Producto*
+- *Proveedor*
+
+### 2.3. Eliminación de redundancias
+Para cada una de estas *colecciones* principales se ha incluido los *documentos* asociados conteniendo estos todos los campos de las tablas. Es decir, las claves primarias y secundarias, aunque ya no ejercen de conexiones siguen estando ahí.
+
+Esto es información redundante, ya que si existe, por ejemplo, un array de *documentos* de orden dentro de un *documento* de la colección clientes, significa que no puede ser una orden de otro *cliente* que no sea el *cliente* del *documento* en el que está contenido.
+
+Por lo tanto, para cada *colección* principal se ha de proceder a eliminar estas claves primarias y foráneas de los *documentos*.
+
+Sin embargo, hay excepciones. Si una *colección* o array de *documentos* aparece en más de una *colección* principal, la eliminación de sus claves relacionales implicaría la pérdida de cierta información. Por ejemplo, detalle_orden está contenida dentro del array de *documentos* de orden que a su vez está contenido en la *colección* clientes, pero además, detalle_orden está contenido en otra *colección*, producto. Si se quisiera relacionar un producto con los clientes y se elimina esta relación de claves, se perdería esta información.
+
+Por lo tanto, solo se van a eliminar las claves primarias de las *colecciones* principales, pero se mantendrán las claves de las subcolecciones, es decir, de los arrays de *documentos*.
+
+Para poder llevar a cabo lo explicado técnicamente, se va a crear una función cuyos argumentos serán la *colección* y el id que se quiere eliminar. Esta será un tipo de función muy especial, llamada recursiva, pues se llama a sí misma cuantas veces sean necesarias. Esto sirve para poder navegar hasta el nivel de profundidad necesario sin necesidad de configurar la función para un nivel específico, pues diferentes *colecciones* tienen diferentes niveles de profundidad.
+
+Por cada *documento* que encuentra, verifica si el id pasado como argumento se encuentra entre las claves del mismo y, si es así, lo elimina.
+```python
+def eliminar_campo_id(coleccion, id):
+	for documento in coleccion:
+	if id in documento:
+		del documento[id]
+	for clave, valor in documento.items():
+		if isinstance(valor, list):
+			eliminar_campo_id(valor, id)	
+```
+Visualización de la *colección* **cliente** antes de llamar a la función:
+```python
+cliente[:1]		
+```
+Output:
+```python
+[{'cliente_id': 1,
+	'nombre': 'Mario Flores Gallardo',
+	'email': 'marioflores@gmail.com',
+	'telefono': '036-15-36',
+	'contacto': 'Aintzane Alvarez Iglesias',
+	'telefono_contacto': '210-35-57',
+	'ciudad': 'Madrid',
+	'orden': [{'orden_id': 2,
+		'cliente_id': 1,
+		'fecha': '2018-02-01 00:00:000',
+		'detalle_orden': [{'detalle_id': 4,
+			'orden_id': 2,
+			'producto_id': 3,
+			'cantidad': 3,
+			'precio': 3},
+		{'detalle_id': 5,
+			'orden_id': 2,
+			'producto_id': 5,
+			'cantidad': 1,
+			'precio': 13}]}]}]			
+```
+Se llama a la función *eliminar_campo_id()*:
+```python
+eliminar_campo_id(cliente, "cliente_id")		
+```
+Visualización de la *colección* **cliente** después de llamar a la función:
+```python
+cliente[:1]			
+```
+Output:
+```python
+[{'nombre': 'Mario Flores Gallardo',
+	'email': 'marioflores@gmail.com',
+	'telefono': '036-15-36',
+	'contacto': 'Aintzane Alvarez Iglesias',
+	'telefono_contacto': '210-35-57',
+	'ciudad': 'Madrid',
+	'orden': [{'orden_id': 2,
+		'fecha': '2018-02-01 00:00:000',
+		'detalle_orden': [{'detalle_id': 4,
+			'orden_id': 2,
+			'producto_id': 3,
+			'cantidad': 3,
+			'precio': 3},
+		{'detalle_id': 5,
+			'orden_id': 2,
+			'producto_id': 5,
+			'cantidad': 1,
+			'precio': 13}]}]}]			
+```
+Como se puede observar, se han eliminado todos los *cliente_id* de todos los niveles de la *colección*. Por lo tanto, se opera de la misma manera con el resto de *colecciones* principales.
+```python
+eliminar_campo_id(producto, "producto_id")
+eliminar_campo_id(proveedor, "proveedor_id")			
+```
+### 2.4. Exportación a JSON
+Por último, todas las *colecciones* generadas a través de listas y diccionarios en Python se exportarán como archivos JSON para, posteriormente, importarlos desde *MongoDB* y así crear las *colecciones*.
+
+Se usará el módulo "json", el cual está integrado dentro de las bibliotecas por defecto de Python.
+```python
+import json
+
+lst_colecciones_ppales = [(cliente, "cliente"),
+							(producto, "producto"),
+							(proveedor, "proveedor"),
+							(departamento, "departamento")
+							]
+for coleccion, nombre in lst_colecciones_ppales:
+	# Ruta para guardar los archivo JSON
+	ruta_colec_json = '/content/' + nombre + '.json'
+	# Escribir la lista de diccionarios en el archivo JSON
+	with open(ruta_colec_json, 'w') as archivo_json:
+		json.dump(coleccion, archivo_json)			
+```
+Tan solo queda descargar los *documentos* exportados a la sesión actual de *Google Colab* en local.
+
+FIGURA
+
+
