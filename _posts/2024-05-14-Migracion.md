@@ -480,7 +480,6 @@ import json
 lst_colecciones_ppales = [(cliente, "cliente"),
 			(producto, "producto"),
 			(proveedor, "proveedor"),
-			(departamento, "departamento")
 			]
 for coleccion, nombre in lst_colecciones_ppales:
 	# Ruta para guardar los archivo JSON
