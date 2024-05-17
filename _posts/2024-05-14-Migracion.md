@@ -678,20 +678,6 @@ Output:
 	upsertedCount: 0
 }					
 ```
-Aprovechando que se ha actualizado el teléfono de Roberto, vamos a comprobar que ha cambiado y, además, veamos los datos de su mascota. Como solo queremos ver la información del teléfono y de la mascota, se añade un segundo parámetro en la función `find()` que define los campos que queremos que devuelva (además del *ObjectId* que lo devuelve por defecto a menos que se le indique lo contrario).
-```cmd
-db.cliente.update({"nombre": "Roberto Martin Ortega"}, {$set: {"telefono": "565-38-78"}})
-```
-Output:
-```cmd
-{
-	acknowledged: true,
-	insertedId: null,
-	matchedCount: 1,
-	modifiedCount: 1,
-	upsertedCount: 0
-}	
-```
 Aprovechando que se ha actualizado el teléfono de Roberto, vamos a comprobar que ha cambiado y, además, veamos los datos de su mascota. Como solo queremos ver la información del teléfono y de la mascota, se añade un segundo parámetro en la función *find()* que define los campos que queremos que devuelva (además del *ObjectId* que lo devuelve por defecto a menos que se le indique lo contrario).
 
 ```cmd
