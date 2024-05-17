@@ -516,6 +516,204 @@ Se crea la base de datos directamente con la sentencia que declara que se quiere
 ```cmd
 Atlas atlas-59qnuo-shard-0 [primary] admin> use love4pets		
 ```
+Output:
+```cmd
+switched to db love4pets		
+```
+Una vez creada, se crean las diferentes **colecciones**, las cuales estarán aún vacías.
+```cmd
+Atlas atlas-59qnuo-shard-0 [primary] love4pets> db.createCollection("cliente")		
+```
+Output:
+```cmd
+{ ok: 1 }		
+```
+![5-creacion_bbdd_mongo.png]({{ site.baseurl }}/images/migracion_sql_mongo/5-creacion_bbdd_mongo.png)
 
+Una vez se tienen las *colecciones* creadas, se cargan los JSON a cada *colección*.
 
+Por cada archivo JSON que se creó anteriormente, se debe abrir, seleccionar y copiar la *colección* y, por último, pegar esta *colección* dentro de la función `insertMany()` de mongosh.
 
+A continuación se mostrará todo el proceso con el ejemplo de la *colección* *cliente*.
+
+Primero, se copia la *colección* del JSON abierto (se puede usar un editor de código como *VS Code* o simplemente en texto plano con el bloc de notas).
+
+![6-seleccion_coleccion_cliente.png]({{ site.baseurl }}/images/migracion_sql_mongo/6-seleccion_coleccion_cliente.png)
+
+A continuación, se insertan los datos del JSON en la *colección* *cliente*.
+
+```cmd
+db.cliente.insertMany([{"nombre": "Mario Flores Gallardo", "email": "marioflores@gmail.com", 
+"telefono": "036-15-36", "contacto": "Aintzane Alvarez Iglesias", "telefono_contacto": 
+"210-35-57", "ciudad": "Madrid", "orden": [{"orden_id": 2, "fecha": 
+"2018-02-01 00:00:000", "detalle_orden": [{"detalle_id": 4, "orden_id": 2, 
+"cantidad": 3, "precio": 3}, {"detalle_id": 5, "orden_id": 2, "cantidad": 1, 
+"precio": 13}]}]} ... ])	
+```
+Output:
+```cmd
+{
+	acknowledged: true,
+	insertedIds: {
+		'0': ObjectId("65e4a4b27e11d699784448a5"),
+		'1': ObjectId("65e4a4b27e11d699784448a6"),
+		'2': ObjectId("65e4a4b27e11d699784448a7"),
+		'3': ObjectId("65e4a4b27e11d699784448a8"),
+		'4': ObjectId("65e4a4b27e11d699784448a9"),
+		'5': ObjectId("65e4a4b27e11d699784448aa"),
+		'6': ObjectId("65e4a4b27e11d699784448ab"),
+		'7': ObjectId("65e4a4b27e11d699784448ac"),
+		'8': ObjectId("65e4a4b27e11d699784448ad"),
+		'9': ObjectId("65e4a4b27e11d699784448ae"),
+		'10': ObjectId("65e4a4b27e11d699784448af"),
+		'11': ObjectId("65e4a4b27e11d699784448b0"),
+		'12': ObjectId("65e4a4b27e11d699784448b1"),
+		'13': ObjectId("65e4a4b27e11d699784448b2"),
+		'14': ObjectId("65e4a4b27e11d699784448b3")
+	}
+}		
+```
+
+![7-pegado_coleccion_cliente.png]({{ site.baseurl }}/images/migracion_sql_mongo/7-pegado_coleccion_cliente.png)
+
+Tras este proceso, se habrá insertado exitosamente la *colección* *cliente* en la base de datos *love4pets*.
+
+Para finalizar con la migración, se procede de igual manera con el resto de *colecciones* almacenadas en los archivos JSON.
+
+### 3.3. Comprobaciones y consultas
+Existen varias formas de comprobar que la base de datos está correctamente creada con sus *colecciones* insertadas debidamente. Una de ellas es acceder a nuestro perfil en la página oficial de *MongoDB* y acceder a nuestras bases de datos.
+
+![8-comprobacion_colecciones.png]({{ site.baseurl }}/images/migracion_sql_mongo/8-comprobacion_colecciones.png)
+
+Como se puede observar en la figura anterior, aparece dentro del apartado *Deployment/Database* la base de datos *love4pets* así como las cuatro *colecciones* creadas. Además, se verifica visualmente que dentro de dicha *colección* existen los distintos *documentos* con los datos correspondientes más un identificador. Este identificador es un objeto creado automáticamente por *MongoDB* y apunta al objeto *documento*, haciéndolo único para su referenciación.
+
+Otra forma de verificar la correcta migración es la consulta a través del *Power Shell de MongoDB*. Por ejemplo, se procede a buscar el *documento* del proveedor *maxipet*:
+
+```cmd
+db.proveedor.find({"nombre":"maxipet"})
+```
+Output:
+```cmd
+[
+{
+	_id: ObjectId("65e4a5767e11d699784448c4"),
+	nombre: 'maxipet',
+	email: 'maxipet@gmail.com',
+	telefono: '8650001508',
+	suministro: [
+	{ cantidad: 5, fecha: '2015-01-01 00:00:000' },
+	{ cantidad: 5, fecha: '2015-01-01 00:00:000' }
+	]
+}
+]		
+```
+La búsqueda ha sido exitosa. Probemos, además, con la búsqueda de aquellos productos que cuesten más de seis unidades monetarias.
+```cmd
+db.producto.find({"precio": {$gt: 6}})
+```
+Output:
+```cmd
+[
+{
+	_id: ObjectId("65e4a52b7e11d699784448bb"),
+	nombre: 'Champu Mimadito',
+	descripcion: 'Champu neutro para mascotas',
+	precio: 7,
+	detalle_orden: [ { detalle_id: 1, orden_id: 1, cantidad: 2, precio: 7 } ],
+	suministro: [ { cantidad: 30, fecha: '2015-01-01 00:00:000' } ]
+},
+{
+	_id: ObjectId("65e4a52b7e11d699784448be"),
+	nombre: 'Perrarina',
+	descripcion: 'Huesos',
+	precio: 12,
+	detalle_orden: [ { detalle_id: 10, orden_id: 7, cantidad: 3, precio: 12 } ],
+	suministro: [ { cantidad: 5, fecha: '2015-01-01 00:00:000' } ]
+},
+{
+	_id: ObjectId("65e4a52b7e11d699784448bf"),
+	nombre: 'Gatarina',
+	descripcion: 'Catspettito',
+	precio: 13,
+	detalle_orden: [
+	{ detalle_id: 3, orden_id: 1, cantidad: 1, precio: 13 },
+	{ detalle_id: 5, orden_id: 2, cantidad: 1, precio: 13 },
+	{ detalle_id: 7, orden_id: 4, cantidad: 1, precio: 13 },
+	{ detalle_id: 9, orden_id: 6, cantidad: 2, precio: 13 },
+	{ detalle_id: 11, orden_id: 8, cantidad: 1, precio: 13 },
+	{ detalle_id: 13, orden_id: 9, cantidad: 1, precio: 13 },
+	{ detalle_id: 18, orden_id: 13, cantidad: 2, precio: 13 },
+	{ detalle_id: 21, orden_id: 15, cantidad: 1, precio: 13 },
+	{ detalle_id: 24, orden_id: 18, cantidad: 1, precio: 13 },
+	{ detalle_id: 26, orden_id: 20, cantidad: 4, precio: 13 },
+	{ detalle_id: 27, orden_id: 21, cantidad: 1, precio: 13 },
+	{ detalle_id: 29, orden_id: 22, cantidad: 1, precio: 13 },
+	{ detalle_id: 32, orden_id: 24, cantidad: 1, precio: 13 }
+	],
+	suministro: [ { cantidad: 5, fecha: '2015-01-01 00:00:000' } ]
+},
+{
+	_id: ObjectId("65e4a52b7e11d699784448c2"),
+	nombre: 'Consulta',
+	descripcion: 'Consulta veterinaria',
+	precio: 15,
+	detalle_orden: [
+	{ detalle_id: 6, orden_id: 3, cantidad: 2, precio: 15 },
+	{ detalle_id: 8, orden_id: 5, cantidad: 1, precio: 15 }
+	]
+}
+]
+			\end{code_output}
+			Cambiemos ahora el teléfono de un cliente, simulando que ha cambiado de número y queremos actualizar la base de datos.
+			
+			\begin{code_input}
+db.cliente.update({"nombre": "Roberto Martin Ortega"}, {$set: {"telefono": "565-38-78"}})
+			\end{code_input} 
+			
+			\begin{code_output}
+{
+	acknowledged: true,
+	insertedId: null,
+	matchedCount: 1,
+	modifiedCount: 1,
+	upsertedCount: 0
+}					
+```
+Aprovechando que se ha actualizado el teléfono de Roberto, vamos a comprobar que ha cambiado y, además, veamos los datos de su mascota. Como solo queremos ver la información del teléfono y de la mascota, se añade un segundo parámetro en la función `find()` que define los campos que queremos que devuelva (además del *ObjectId* que lo devuelve por defecto a menos que se le indique lo contrario).
+```cmd
+db.cliente.update({"nombre": "Roberto Martin Ortega"}, {$set: {"telefono": "565-38-78"}})
+```
+Output:
+```cmd
+{
+	acknowledged: true,
+	insertedId: null,
+	matchedCount: 1,
+	modifiedCount: 1,
+	upsertedCount: 0
+}	
+```
+Aprovechando que se ha actualizado el teléfono de Roberto, vamos a comprobar que ha cambiado y, además, veamos los datos de su mascota. Como solo queremos ver la información del teléfono y de la mascota, se añade un segundo parámetro en la función *find()* que define los campos que queremos que devuelva (además del *ObjectId* que lo devuelve por defecto a menos que se le indique lo contrario).
+
+```cmd
+db.cliente.find({"nombre":"Roberto Martin Ortega"}, {"telefono":1, "mascota": 1})
+```
+Output:
+```cmd
+[
+{
+	_id: ObjectId("65e4a4b27e11d699784448aa"),
+	telefono: '565-38-78',
+	mascota: [
+	{
+		mascota_id: 5,
+		nombre: 'Pelusa',
+		especie: 'perro',
+		raza: 'Puddle',
+		fecha_nacimiento: '2008-02-03 00:00:000'
+	}
+	]
+}
+]	
+```
+Por tanto, después de hacer las comprobaciones se puede asegurar que la base de datos ha sido migrada exitosamente de SQL a NoSQL en un cluster en el Cloud de *MongoDB*.
