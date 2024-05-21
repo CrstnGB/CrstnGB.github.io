@@ -142,8 +142,83 @@ Nótese que la tabla *detalle_orden* surge de una relación n:m entre las entida
 
 Además, se habrá observado que la entidad *suministro* tiene dos atributos que son **PK**. Ojo, esto no significa que la tabla tenga dos **PK** (esto sería incorrecto), significa que el **PK** se compone de dos atributos. Es decir, el **PK** se puede entender como la composición de dos atributos para garantizar la unicidad del registro.
 
-## Estructura objetivo: colecciones de documentos
-## 2. Creación de **colecciones** de **documentos** a partir de la base de datos relacional
+## 2. Estructura objetivo: colecciones de documentos
+En SQL, los datos se organizan en tablas, donde cada fila representa un registro y cada columna un campo con un tipo de dato definido. En MongoDB, los datos se almacenan en colecciones, que son conjuntos de documentos. Cada documento es un objeto similar a JSON que puede contener pares clave-valor, arrays y subdocumentos. Mientras que en SQL la estructura es rígida y requiere definir un esquema fijo, MongoDB ofrece una estructura flexible y dinámica, permitiendo a cada documento en una colección tener un esquema distinto si es necesario. Esto facilita el manejo de datos no estructurados o semiestructurados y la evolución del esquema con el tiempo.
+
+Una colección en MongoDB es como una carpeta en donde se pueden guardar muchos documentos.
+- **Colección**: "carpeta" que contiene documentos
+- **Documentos**: son los archivos dentro de la "carpeta".
+
+Cada documento es una entrada dentro de la colección y se parece a un objeto JSON, con pares clave-valor:
+```JSON
+[
+  {
+    "nombre": "Juan",
+    "edad": 30,
+    "correo": "juan@example.com"
+  },
+  {
+    "nombre": "María",
+    "edad": 25,
+    "correo": "maria@example.com"
+  },
+  {
+    "nombre": "Pedro",
+    "edad": 28,
+    "correo": "pedro@example.com"
+  }
+]
+```
+En este caso, esta colección podría llamarse *usuarios* (todo el contenido entre corchetes) y cada documento dentro de la colección (entre llaves) representa un usuario con sus detalles: *nombre*, *edad* y *correo*.
+
+Este es un ejemplo sencillo en donde cada clave tiene su valor. Sin embargo, puede ocurrir que una clave contenga un *array* (una lista de elementos) o incluso otros subdocumentos dentro de un documento:
+
+```JSON
+[
+  {
+    "nombre": "Juan",
+    "edad": 30,
+    "correo": "juan@example.com",
+    "hobbies": ["leer", "correr", "viajar"],
+    "direccion": {
+      "calle": "Calle Falsa 123",
+      "ciudad": "Madrid",
+      "codigo_postal": "28080"
+    }
+  },
+  {
+    "nombre": "María",
+    "edad": 25,
+    "correo": "maria@example.com",
+    "hobbies": ["pintar", "bailar"],
+    "direccion": {
+      "calle": "Avenida Siempre Viva 742",
+      "ciudad": "Barcelona",
+      "codigo_postal": "08080"
+    }
+  },
+  {
+    "nombre": "Pedro",
+    "edad": 28,
+    "correo": "pedro@example.com",
+    "hobbies": ["fotografía", "ciclismo"],
+    "direccion": {
+      "calle": "Boulevard de los Sueños Rotos 456",
+      "ciudad": "Valencia",
+      "codigo_postal": "46080"
+    }
+  }
+]
+```
+Como se puede observar en el ejemplo mostrado, se ha ampliado la colección *usuarios* con:
+- **Arrays**: añadiendo una lista de hobbies para cada usuario.
+- **Subdocumentos**: incluyendo un campo de dirección que a su vez tiene varios campos (calle, ciudad y código postal).
+
+Esta flexibilidad para manejar datos complejos y anidados es una de las grandes ventajas de usar MongoDB.
+
+Por hacer una breve comparación con SQL, donde los datos se organizan en **tablas**, cada fila es un **registro** y cada columna un **campo** con un tipo de dato definido, en MongoDB las **tablas** serían las **colecciones**, los **registros** serían los documentos y los **campos** también serían denominados de igual forma en MongoDB, solo que en lugar de ser columnas serían las **claves** del JSON.
+
+## 3. Creación de **colecciones** de **documentos** a partir de la base de datos relacional
 Tras analizar el esquema de entidad-relación, se procede a elaborar las *colecciones* (tablas) necesarias así como los *documentos* (registros) contenidos en las *colecciones*. Para ello, se utilizará el objeto *Diccionario* de Python. De esta forma, se creará una estructura similar a un JSON y, por lo tanto, compatible con el formato de las *colecciones* basadas en la estructura "Clave-valor".
 
 La estrategia que se va a seguir para la migración de SQL a NoSQL se basa en la incrustración de *documentos*.
@@ -158,7 +233,7 @@ Las tablas que tienen relación 1:M y que serán *colecciones* principales son:
 - *Producto - detalle_orden*
 - *Producto - suministro*
 - *Proveedor - suministro*
-### 2.1. Consulta de tablas y creación de lista de diccionarios
+### 3.1. Consulta de tablas y creación de lista de diccionarios
 Para comenzar, se van a formatear las tablas de la base de datos en forma de lista de diccionarios. En lenguaje NoSQL, se crearán **colecciones** de **documentos**.
 			
 Se crea una lista por cada tabla, suponiendo como punto de partida que cada tabla será una **colección** en sí misma.
@@ -272,7 +347,7 @@ Output:
 	'descripcion': 'Liquido antipulgas',
 	'precio': 3}]
 ```
-### 2.2. Incrustación de **documentos**
+### 3.2. Incrustación de **documentos**
 Una vez tengamos cada colección en el formato deseado, se procede a relacionar unas *colecciones* con otras.
 
 Cada *colección* corresponde a una de las tablas de la base de datos original y, cada tabla, se relaciona con, al menos, una tabla más. Por lo tanto, se van a buscar los valores relacionados dentro de cada *colección* con la otra *colección* o *colecciones* con las que se relaciona.
@@ -386,7 +461,7 @@ En este punto, se tienen tres *colecciones*:
 - *Producto*
 - *Proveedor*
 
-### 2.3. Eliminación de redundancias
+### 3.3. Eliminación de redundancias
 Para cada una de estas *colecciones* principales se ha incluido los *documentos* asociados conteniendo estos todos los campos de las tablas. Es decir, las claves primarias y secundarias, aunque ya no ejercen de conexiones siguen estando ahí.
 
 Esto es información redundante, ya que si existe, por ejemplo, un array de *documentos* de orden dentro de un *documento* de la colección clientes, significa que no puede ser una orden de otro *cliente* que no sea el *cliente* del *documento* en el que está contenido.
@@ -470,7 +545,7 @@ Como se puede observar, se han eliminado todos los *cliente_id* de todos los niv
 eliminar_campo_id(producto, "producto_id")
 eliminar_campo_id(proveedor, "proveedor_id")			
 ```
-### 2.4. Exportación a JSON
+### 3.4. Exportación a JSON
 Por último, todas las *colecciones* generadas a través de listas y diccionarios en Python se exportarán como archivos JSON para, posteriormente, importarlos desde *MongoDB* y así crear las *colecciones*.
 
 Se usará el módulo "json", el cual está integrado dentro de las bibliotecas por defecto de Python.
@@ -492,7 +567,7 @@ Tan solo queda descargar los *documentos* exportados a la sesión actual de *Goo
 
 ![3-JSON_a_descargar.png]({{ site.baseurl }}/images/migracion_sql_mongo/3-JSON_a_descargar.png)
 
-## 3. Creación de la base de datos NoSQL en **MongoDB**
+## 4. Creación de la base de datos NoSQL en **MongoDB**
 Para poder operar en *MongoDB* se necesita completar una serie de pasos previos, como el registro en *MongoDB Atlas*, creación de un cluster, etc... Sin embargo, debido a la existencia de manuales exclusivos para la realización de este proceso, no se explicará en este *documento* ya que no es parte del objetivo del mismo.
 
 Por lo tanto, se parte de que ya se tiene un usuario creado en Atlas y un cluster operativo.
@@ -509,7 +584,7 @@ Así pues, se seguirán las instrucciones adecuadas para la instalación de Mong
 
 Desde este momento, ya se puede realizar las consultas MQL en el cluster.
 
-### 3.2. Creación de la base de datos e ingreso de las **colecciones**
+### 4.2. Creación de la base de datos e ingreso de las **colecciones**
 Se crea la base de datos directamente con la sentencia que declara que se quiere usar dicha base de datos.
 
 ```cmd
@@ -579,7 +654,7 @@ Tras este proceso, se habrá insertado exitosamente la *colección* *cliente* en
 
 Para finalizar con la migración, se procede de igual manera con el resto de *colecciones* almacenadas en los archivos JSON.
 
-### 3.3. Comprobaciones y consultas
+### 4.3. Comprobaciones y consultas
 Existen varias formas de comprobar que la base de datos está correctamente creada con sus *colecciones* insertadas debidamente. Una de ellas es acceder a nuestro perfil en la página oficial de *MongoDB* y acceder a nuestras bases de datos.
 
 ![8-comprobacion_colecciones.png]({{ site.baseurl }}/images/migracion_sql_mongo/8-comprobacion_colecciones.png)
